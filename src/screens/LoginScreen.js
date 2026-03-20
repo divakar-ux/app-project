@@ -81,7 +81,7 @@ export default function LoginScreen({ navigation, route }) {
       >
         <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
-            <Ionicons name="leaf" size={40} color="#7A5C2E" />
+            <Ionicons name="leaf" size={40} color="#16A34A" />
           </View>
           <Text style={styles.brandName}>Dr. Renga's</Text>
           <Text style={styles.tagline}>Pure & Natural Products</Text>
@@ -92,7 +92,7 @@ export default function LoginScreen({ navigation, route }) {
           <Text style={styles.subtitle}>Sign in to continue</Text>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="mail-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+            <Ionicons name="mail-outline" size={20} color="#16A34A" style={styles.inputIcon} />
             <TextInput
               placeholder="Email Address"
               placeholderTextColor="#999"
@@ -105,7 +105,7 @@ export default function LoginScreen({ navigation, route }) {
           </View>
 
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+            <Ionicons name="lock-closed-outline" size={20} color="#16A34A" style={styles.inputIcon} />
             <TextInput
               placeholder="Password"
               placeholderTextColor="#999"
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#7A5C2E20',
+    backgroundColor: '#16A34A20',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   brandName: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
   tagline: {
     fontSize: 14,
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     color: '#333'
   },
   button: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     borderRadius: 12,
     height: 52,
     justifyContent: 'center',
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     color: '#666'
   },
   link: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: 'bold'
   }
 });

@@ -18,6 +18,7 @@ import { registerCustomer } from '../api/shopify';
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +43,8 @@ export default function RegisterScreen({ navigation }) {
     try {
       setLoading(true);
 
-      const result = await registerCustomer(email.trim(), password, name.trim());
+      const phoneValue = phone.trim() ? phone.trim() : null;
+      const result = await registerCustomer(email.trim(), password, name.trim(), phoneValue);
 
       if (result.customerUserErrors?.length > 0) {
         const errorMsg = result.customerUserErrors[0].message;
@@ -90,7 +92,7 @@ export default function RegisterScreen({ navigation }) {
 
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
-              <Ionicons name="person-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+              <Ionicons name="person-outline" size={20} color="#16A34A" style={styles.inputIcon} />
               <TextInput
                 placeholder="Full Name"
                 placeholderTextColor="#999"
@@ -101,7 +103,7 @@ export default function RegisterScreen({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Ionicons name="mail-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+              <Ionicons name="mail-outline" size={20} color="#16A34A" style={styles.inputIcon} />
               <TextInput
                 placeholder="Email Address"
                 placeholderTextColor="#999"
@@ -114,7 +116,19 @@ export default function RegisterScreen({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+              <Ionicons name="call-outline" size={20} color="#16A34A" style={styles.inputIcon} />
+              <TextInput
+                placeholder="Phone Number"
+                placeholderTextColor="#999"
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={20} color="#16A34A" style={styles.inputIcon} />
               <TextInput
                 placeholder="Password"
                 placeholderTextColor="#999"
@@ -133,7 +147,7 @@ export default function RegisterScreen({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Ionicons name="shield-checkmark-outline" size={20} color="#7A5C2E" style={styles.inputIcon} />
+              <Ionicons name="shield-checkmark-outline" size={20} color="#16A34A" style={styles.inputIcon} />
               <TextInput
                 placeholder="Confirm Password"
                 placeholderTextColor="#999"
@@ -227,7 +241,7 @@ const styles = StyleSheet.create({
     color: '#333'
   },
   button: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     borderRadius: 12,
     height: 52,
     justifyContent: 'center',
@@ -251,7 +265,7 @@ const styles = StyleSheet.create({
     color: '#666'
   },
   link: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: 'bold'
   }
 });

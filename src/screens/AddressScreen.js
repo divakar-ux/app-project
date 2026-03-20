@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
+import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
 import {
@@ -25,7 +26,7 @@ import {
 import ScreenHeader from '../components/ScreenHeader';
 
 export default function AddressScreen({ navigation }) {
-  const { userToken } = useContext(AuthContext);
+  const { userToken, customer } = useContext(AuthContext);
 
   const [addresses, setAddresses] = useState([]);
   const [defaultAddressId, setDefaultAddressId] = useState(null);
@@ -33,16 +34,14 @@ export default function AddressScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
     address1: '',
     address2: '',
     city: '',
     province: '',
-    zip: '',
-    phone: ''
+    zip: ''
   });
 
   useEffect(() => {
@@ -66,14 +65,11 @@ export default function AddressScreen({ navigation }) {
 
   const resetForm = () => {
     setForm({
-      firstName: '',
-      lastName: '',
       address1: '',
       address2: '',
       city: '',
       province: '',
-      zip: '',
-      phone: ''
+      zip: ''
     });
     setEditingAddress(null);
   };
@@ -83,17 +79,55 @@ export default function AddressScreen({ navigation }) {
     setModalVisible(true);
   };
 
+  const handleUseCurrentLocation = async () => {
+    try {
+      setGettingLocation(true);
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission needed',
+          'Please allow location access to use your current address.'
+        );
+        return;
+      }
+      const { coords } = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced
+      });
+      const [addr] = await Location.reverseGeocodeAsync({
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      });
+      if (!addr) {
+        Alert.alert('Error', 'Could not get address for your location. Please enter it manually.');
+        return;
+      }
+      const street = [addr.streetNumber, addr.street].filter(Boolean).join(' ') || addr.name || '';
+      setForm((prev) => ({
+        ...prev,
+        address1: street || prev.address1,
+        address2: addr.district || prev.address2,
+        city: addr.city || addr.subregion || prev.city,
+        province: addr.region || prev.province,
+        zip: addr.postalCode || prev.zip
+      }));
+    } catch (error) {
+      Alert.alert(
+        'Location error',
+        error.message || 'Could not get your location. Please enter the address manually.'
+      );
+    } finally {
+      setGettingLocation(false);
+    }
+  };
+
   const openEditModal = (address) => {
     setEditingAddress(address);
     setForm({
-      firstName: address.firstName || '',
-      lastName: address.lastName || '',
       address1: address.address1 || '',
       address2: address.address2 || '',
       city: address.city || '',
       province: address.province || '',
-      zip: address.zip || '',
-      phone: address.phone || ''
+      zip: address.zip || ''
     });
     setModalVisible(true);
   };
@@ -104,14 +138,24 @@ export default function AddressScreen({ navigation }) {
       return;
     }
 
+    const firstName = customer?.firstName || 'Customer';
+    const lastName = customer?.lastName || '';
+    const addressData = {
+      ...form,
+      firstName,
+      lastName,
+      country: 'India',
+      phone: customer?.phone || ''
+    };
+
     try {
       setSaving(true);
 
       let result;
       if (editingAddress) {
-        result = await updateCustomerAddress(userToken, editingAddress.id, form);
+        result = await updateCustomerAddress(userToken, editingAddress.id, addressData);
       } else {
-        result = await createCustomerAddress(userToken, form);
+        result = await createCustomerAddress(userToken, addressData);
       }
 
       if (result.customerUserErrors?.length > 0) {
@@ -175,10 +219,7 @@ export default function AddressScreen({ navigation }) {
     return (
       <View style={styles.addressCard}>
         <View style={styles.addressHeader}>
-          <View style={styles.nameRow}>
-            <Text style={styles.addressName}>
-              {address.firstName} {address.lastName}
-            </Text>
+          <View style={styles.addressHeaderLeft}>
             {isDefault && (
               <View style={styles.defaultBadge}>
                 <Text style={styles.defaultText}>Default</Text>
@@ -190,7 +231,7 @@ export default function AddressScreen({ navigation }) {
               style={styles.iconBtn}
               onPress={() => openEditModal(address)}
             >
-              <Ionicons name="pencil-outline" size={18} color="#7A5C2E" />
+              <Ionicons name="pencil-outline" size={18} color="#16A34A" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconBtn}
@@ -208,9 +249,6 @@ export default function AddressScreen({ navigation }) {
         <Text style={styles.addressLine}>
           {address.city}, {address.province} - {address.zip}
         </Text>
-        {address.phone ? (
-          <Text style={styles.phoneText}>Phone: {address.phone}</Text>
-        ) : null}
 
         {!isDefault && (
           <TouchableOpacity
@@ -229,7 +267,7 @@ export default function AddressScreen({ navigation }) {
       <View style={styles.wrapper}>
         <ScreenHeader title="My Addresses" navigation={navigation} />
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
         </View>
       </View>
     );
@@ -279,26 +317,20 @@ export default function AddressScreen({ navigation }) {
             </View>
 
             <ScrollView style={styles.formContainer}>
-              <View style={styles.row}>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>First Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.firstName}
-                    onChangeText={(text) => setForm({ ...form, firstName: text })}
-                    placeholder="First name"
-                  />
-                </View>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>Last Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.lastName}
-                    onChangeText={(text) => setForm({ ...form, lastName: text })}
-                    placeholder="Last name"
-                  />
-                </View>
-              </View>
+              <TouchableOpacity
+                style={[styles.locationButton, gettingLocation && { opacity: 0.7 }]}
+                onPress={handleUseCurrentLocation}
+                disabled={gettingLocation}
+              >
+                {gettingLocation ? (
+                  <ActivityIndicator size="small" color="#16A34A" />
+                ) : (
+                  <Ionicons name="location" size={20} color="#16A34A" />
+                )}
+                <Text style={styles.locationButtonText}>
+                  {gettingLocation ? 'Getting location...' : 'Use current location'}
+                </Text>
+              </TouchableOpacity>
 
               <Text style={styles.label}>Address Line 1 *</Text>
               <TextInput
@@ -313,52 +345,33 @@ export default function AddressScreen({ navigation }) {
                 style={styles.input}
                 value={form.address2}
                 onChangeText={(text) => setForm({ ...form, address2: text })}
-                placeholder="Apartment, suite, etc. (optional)"
+                placeholder="Apartment, building, etc. (optional)"
               />
 
-              <View style={styles.row}>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>City *</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.city}
-                    onChangeText={(text) => setForm({ ...form, city: text })}
-                    placeholder="City"
-                  />
-                </View>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>State</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.province}
-                    onChangeText={(text) => setForm({ ...form, province: text })}
-                    placeholder="State"
-                  />
-                </View>
-              </View>
+              <Text style={styles.label}>City *</Text>
+              <TextInput
+                style={styles.input}
+                value={form.city}
+                onChangeText={(text) => setForm({ ...form, city: text })}
+                placeholder="City"
+              />
 
-              <View style={styles.row}>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>PIN Code *</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.zip}
-                    onChangeText={(text) => setForm({ ...form, zip: text })}
-                    placeholder="PIN code"
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View style={styles.halfInput}>
-                  <Text style={styles.label}>Phone</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={form.phone}
-                    onChangeText={(text) => setForm({ ...form, phone: text })}
-                    placeholder="Phone number"
-                    keyboardType="phone-pad"
-                  />
-                </View>
-              </View>
+              <Text style={styles.label}>State</Text>
+              <TextInput
+                style={styles.input}
+                value={form.province}
+                onChangeText={(text) => setForm({ ...form, province: text })}
+                placeholder="State"
+              />
+
+              <Text style={styles.label}>PIN Code *</Text>
+              <TextInput
+                style={styles.input}
+                value={form.zip}
+                onChangeText={(text) => setForm({ ...form, zip: text })}
+                placeholder="PIN code"
+                keyboardType="numeric"
+              />
             </ScrollView>
 
             <TouchableOpacity
@@ -414,25 +427,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 8
   },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  addressHeaderLeft: {
     flex: 1
   },
-  addressName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333'
-  },
   defaultBadge: {
-    backgroundColor: '#7A5C2E20',
+    backgroundColor: '#16A34A20',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
-    marginLeft: 8
+    alignSelf: 'flex-start'
   },
   defaultText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 11,
     fontWeight: '600'
   },
@@ -448,11 +454,6 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 2
   },
-  phoneText: {
-    fontSize: 13,
-    color: '#888',
-    marginTop: 4
-  },
   setDefaultBtn: {
     marginTop: 12,
     paddingVertical: 8,
@@ -460,7 +461,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#f0f0f0'
   },
   setDefaultText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 14,
     fontWeight: '500'
   },
@@ -480,7 +481,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 16,
     right: 16,
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -521,6 +522,24 @@ const styles = StyleSheet.create({
     padding: 16,
     maxHeight: 400
   },
+  locationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: '#16A34A',
+    borderRadius: 10,
+    backgroundColor: '#16A34A10'
+  },
+  locationButtonText: {
+    marginLeft: 8,
+    fontSize: 15,
+    color: '#16A34A',
+    fontWeight: '600'
+  },
   row: {
     flexDirection: 'row',
     gap: 12
@@ -542,7 +561,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   saveButton: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     margin: 16,
     paddingVertical: 14,
     borderRadius: 12,

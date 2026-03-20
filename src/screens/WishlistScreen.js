@@ -95,7 +95,7 @@ export default function WishlistScreen({ navigation }) {
         contentContainerStyle={[styles.list, wishlistItems.length === 0 && { flex: 1 }]}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="heart-outline" size={70} color="#ddd" />
+            <Ionicons name="heart-outline" size={70} color="#E0BFA5" />
             <Text style={styles.emptyTitle}>Your wishlist is empty</Text>
             <Text style={styles.emptySubtext}>
               Save items you love by tapping the heart icon
@@ -116,18 +116,23 @@ export default function WishlistScreen({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#FFF8F2'
   },
   list: {
     padding: 16
   },
   itemCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#eee',
-    overflow: 'hidden'
+    borderColor: '#F2E4D5',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2
   },
   itemContent: {
     flexDirection: 'row',
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   placeholderImage: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFF2E0',
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
   itemPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#B4690E'
   },
   actionButtons: {
     flexDirection: 'row',
@@ -169,7 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 12,
     gap: 6
   },
@@ -182,7 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff'
+    backgroundColor: '#FFFFFF'
   },
   emptyContainer: {
     flex: 1,
@@ -204,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   shopButton: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8

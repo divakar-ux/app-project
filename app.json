@@ -1,12 +1,23 @@
 {
   "expo": {
-    "name": "rengas-app",
+    "name": "dr rengas-solar delights",
     "slug": "rengas-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./src/assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "This app uses your location to fill in your address when adding a new delivery address."
+        }
+      ]
     ]
   }
 }

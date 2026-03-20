@@ -12,6 +12,7 @@ import {
   Dimensions,
   ActivityIndicator
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
@@ -19,6 +20,22 @@ import { createCheckout, associateCustomerWithCheckout } from '../api/shopify';
 import ScreenHeader from '../components/ScreenHeader';
 
 const { width } = Dimensions.get('window');
+
+const wrapDescriptionHtml = (desc) => {
+  const html = /<[a-z][\s\S]*>/i.test(desc)
+    ? desc
+    : `<div>${String(desc).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')}</div>`;
+  const style = `
+    * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { margin: 0; padding: 0; color: #555; font-size: 15px; line-height: 1.6; text-align: left; }
+    p, div { margin: 0 0 12px 0; }
+    ul, ol { margin: 0 0 12px 0; padding-left: 20px; }
+    li { margin-bottom: 4px; }
+    strong, b { color: #333; font-weight: bold; }
+    h1, h2, h3 { color: #333; font-weight: bold; margin: 0 0 8px 0; }
+  `;
+  return `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${style}</style></head><body>${html}</body></html>`;
+};
 
 export default function ProductDetailsScreen({ route, navigation }) {
   const { addToCart, cartItems, isInWishlist, toggleWishlist } = useContext(CartContext);
@@ -251,20 +268,28 @@ export default function ProductDetailsScreen({ route, navigation }) {
           <Text style={styles.quantityLabel}>Quantity</Text>
           <View style={styles.quantityControls}>
             <TouchableOpacity style={styles.qtyBtn} onPress={decrementQty}>
-              <Ionicons name="remove" size={20} color="#7A5C2E" />
+              <Ionicons name="remove" size={20} color="#16A34A" />
             </TouchableOpacity>
             <Text style={styles.qtyValue}>{quantity}</Text>
             <TouchableOpacity style={styles.qtyBtn} onPress={incrementQty}>
-              <Ionicons name="add" size={20} color="#7A5C2E" />
+              <Ionicons name="add" size={20} color="#16A34A" />
             </TouchableOpacity>
           </View>
         </View>
 
         {productNode.description && (
-          <>
+          <View style={styles.descriptionSection}>
             <Text style={styles.descTitle}>Description</Text>
-            <Text style={styles.description}>{productNode.description}</Text>
-          </>
+            <WebView
+              source={{ html: wrapDescriptionHtml(productNode.description) }}
+              style={styles.descriptionWebView}
+              scrollEnabled={false}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              originWhitelist={['*']}
+              javaScriptEnabled={false}
+            />
+          </View>
         )}
 
         <View style={styles.buttonRow}>
@@ -284,10 +309,10 @@ export default function ProductDetailsScreen({ route, navigation }) {
             disabled={buyingNow}
           >
             {buyingNow ? (
-              <ActivityIndicator color="#7A5C2E" />
+              <ActivityIndicator color="#16A34A" />
             ) : (
               <>
-                <Ionicons name="flash" size={20} color="#7A5C2E" />
+                <Ionicons name="flash" size={20} color="#16A34A" />
                 <Text style={styles.buyNowText}>Buy Now</Text>
               </>
             )}
@@ -365,7 +390,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent'
   },
   thumbnailActive: {
-    borderColor: '#7A5C2E'
+    borderColor: '#16A34A'
   },
   imageActions: {
     position: 'absolute',
@@ -402,7 +427,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
   comparePrice: {
     fontSize: 16,
@@ -456,17 +481,29 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     color: '#333'
   },
+  descriptionSection: {
+    width: '100%',
+    marginBottom: 8
+  },
   descTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8
+    marginBottom: 8,
+    textAlign: 'left'
   },
   description: {
     fontSize: 15,
     color: '#555',
     lineHeight: 24,
-    marginBottom: 24
+    marginBottom: 24,
+    textAlign: 'left',
+    width: '100%'
+  },
+  descriptionWebView: {
+    width: '100%',
+    height: 600,
+    backgroundColor: 'transparent'
   },
   buttonRow: {
     marginTop: 8,
@@ -474,7 +511,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -494,10 +531,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#7A5C2E'
+    borderColor: '#16A34A'
   },
   buyNowText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: 'bold',
     fontSize: 16,
     marginLeft: 8

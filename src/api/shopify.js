@@ -12,6 +12,18 @@ export const getAllCollections = async () => {
           id
           title
           handle
+          image {
+            url
+          }
+          products(first: 1) {
+            edges {
+              node {
+                featuredImage {
+                  url
+                }
+              }
+            }
+          }
           productsCount {
             count
           }
@@ -32,8 +44,13 @@ export const getAllCollections = async () => {
     });
 
     const json = await response.json();
-    return json?.data?.collections?.edges || [];
-
+    const edges = json?.data?.collections?.edges || [];
+    return edges.map((e) => {
+      const node = e.node;
+      const firstProductImage = node.products?.edges?.[0]?.node?.featuredImage?.url;
+      const imageUrl = node.image?.url || firstProductImage || null;
+      return { ...e, node: { ...node, imageUrl } };
+    });
   } catch (error) {
     console.log("Shopify collections error:", error);
     return [];
@@ -145,18 +162,42 @@ export const searchProducts = async (searchQuery) => {
   }
 };
 
-export const registerCustomer = async (email, password, name) => {
+const formatPhoneE164 = (value) => {
+  const trimmed = (value || '').trim();
+  if (!trimmed) return null;
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length < 10) return null;
+  if (digits.length === 10 && ['6','7','8','9'].includes(digits[0])) {
+    return `+91${digits}`;
+  }
+  if (digits.length === 12 && digits.startsWith('91')) return `+${digits}`;
+  if (trimmed.startsWith('+') && digits.length >= 10) return trimmed;
+  return null;
+};
+
+export const registerCustomer = async (email, password, name, phone = null) => {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  const firstName = parts[0] || 'Customer';
+  const lastName = parts.slice(1).join(' ') || null;
+  const phoneFormatted = phone ? formatPhoneE164(phone) : null;
+
+  const input = {
+    email: (email || '').trim(),
+    password: password || '',
+    firstName
+  };
+  if (lastName) input.lastName = lastName;
+  if (phoneFormatted) input.phone = phoneFormatted;
+
   const query = `
-  mutation {
-    customerCreate(input: {
-      email: "${email}",
-      password: "${password}",
-      firstName: "${name}"
-    }) {
+  mutation customerCreate($input: CustomerCreateInput!) {
+    customerCreate(input: $input) {
       customer {
         id
         email
         firstName
+        lastName
+        phone
       }
       customerUserErrors {
         code
@@ -174,15 +215,27 @@ export const registerCustomer = async (email, password, name) => {
         "Content-Type": "application/json",
         "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify({ query, variables: { input } })
     });
 
     const json = await response.json();
-    return json?.data?.customerCreate || { customerUserErrors: [{ message: "Unknown error" }] };
+
+    if (json.errors && json.errors.length > 0) {
+      const msg = json.errors[0].message || "GraphQL error";
+      console.log("Shopify register GraphQL errors:", json.errors);
+      return { customerUserErrors: [{ message: msg }] };
+    }
+
+    const result = json?.data?.customerCreate;
+    if (!result) {
+      return { customerUserErrors: [{ message: "No response from server" }] };
+    }
+
+    return result;
 
   } catch (error) {
     console.log("Shopify register error:", error);
-    return { customerUserErrors: [{ message: error.message }] };
+    return { customerUserErrors: [{ message: error.message || "Network error" }] };
   }
 };
 
@@ -282,22 +335,38 @@ export const updateCustomer = async (accessToken, customerData) => {
     customer: customerData
   };
 
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
-      },
-      body: JSON.stringify({ query, variables })
-    });
+  const fetchWithTimeout = async (timeoutMs = 15000) => {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
+        },
+        body: JSON.stringify({ query, variables }),
+        signal: controller?.signal
+      });
+      if (timeoutId) clearTimeout(timeoutId);
+      return response;
+    } catch (e) {
+      if (timeoutId) clearTimeout(timeoutId);
+      throw e;
+    }
+  };
 
+  try {
+    const response = await fetchWithTimeout();
     const json = await response.json();
     return json?.data?.customerUpdate || { customerUserErrors: [{ message: "Update failed" }] };
-
   } catch (error) {
     console.log("Shopify update customer error:", error);
-    return { customerUserErrors: [{ message: error.message }] };
+    const isNetwork = error.message?.includes("Network") || error.name === "AbortError";
+    const msg = isNetwork
+      ? "Network error. Check your internet connection and try again."
+      : error.message || "Update failed";
+    throw new Error(msg);
   }
 };
 

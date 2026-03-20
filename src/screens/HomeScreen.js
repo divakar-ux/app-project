@@ -21,7 +21,14 @@ import Animated, {
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { getProductsByCollection } from '../api/shopify';
+import { getProductsByCollection, getAllCollections } from '../api/shopify';
+
+const HOME_COLLECTIONS = [
+  { title: "Dried Vegetables", handle: "dehydrated-vegetables", icon: "leaf-outline", color: "#4CAF50" },
+  { title: "Dried Fruits", handle: "dried-fruits-no-sugar", icon: "rose-outline", color: "#9C27B0" },
+  { title: "Sweets", handle: "sweets", icon: "ice-cream-outline", color: "#FF5722" },
+  { title: "Combo Packs", handle: "healthy-vegetable-herbal-combo-packs", icon: "gift-outline", color: "#E91E63" },
+];
 import { CartContext } from '../context/CartContext';
 
 const { width } = Dimensions.get('window');
@@ -37,13 +44,9 @@ export default function HomeScreen({ navigation }) {
   const [loadingFeatured, setLoadingFeatured] = useState(false);
   const [featuredError, setFeaturedError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [collectionImages, setCollectionImages] = useState({});
 
-  const collections = [
-    { title: "Dried Vegetables", handle: "dehydrated-vegetables", icon: "leaf-outline", color: "#4CAF50" },
-    { title: "Dried Fruits", handle: "dried-fruits-no-sugar", icon: "rose-outline", color: "#9C27B0" },
-    { title: "Sweets", handle: "sweets", icon: "ice-cream-outline", color: "#FF5722" },
-    { title: "Combo Packs", handle: "healthy-vegetable-herbal-combo-packs", icon: "gift-outline", color: "#E91E63" },
-  ];
+  const collections = HOME_COLLECTIONS;
 
   const reviews = [
     {
@@ -68,7 +71,40 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     loadFeatured();
+    loadCollectionImages();
   }, []);
+
+  const loadCollectionImages = async () => {
+    try {
+      const data = await getAllCollections();
+      const map = {};
+      data.forEach(({ node }) => {
+        if (node.handle && node.imageUrl) map[node.handle] = node.imageUrl;
+      });
+      setCollectionImages((prev) => ({ ...prev, ...map }));
+
+      // Fallback: fetch first product image for categories still missing images
+      const missing = HOME_COLLECTIONS.filter((c) => !map[c.handle]);
+      const results = await Promise.all(
+        missing.map(async (cat) => {
+          try {
+            const products = await getProductsByCollection(cat.handle);
+            const img = products?.[0]?.node?.images?.edges?.[0]?.node?.url;
+            return img ? { handle: cat.handle, url: img } : null;
+          } catch {
+            return null;
+          }
+        })
+      );
+      const fallbackMap = {};
+      results.forEach((r) => {
+        if (r) fallbackMap[r.handle] = r.url;
+      });
+      setCollectionImages((prev) => ({ ...prev, ...fallbackMap }));
+    } catch (e) {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -95,8 +131,32 @@ export default function HomeScreen({ navigation }) {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      const data = await getProductsByCollection("best-selling-products");
-      setFeaturedProducts(data.slice(0, 8));
+      const [productsData, collectionsData] = await Promise.all([
+        getProductsByCollection("best-selling-products"),
+        getAllCollections()
+      ]);
+      setFeaturedProducts(productsData.slice(0, 8));
+      const map = {};
+      (collectionsData || []).forEach(({ node }) => {
+        if (node?.handle && node?.imageUrl) map[node.handle] = node.imageUrl;
+      });
+      setCollectionImages((prev) => ({ ...prev, ...map }));
+      // Fallback for missing images on refresh
+      const missing = HOME_COLLECTIONS.filter((c) => !map[c.handle]);
+      if (missing.length > 0) {
+        const fallbacks = await Promise.all(
+          missing.map(async (cat) => {
+            try {
+              const products = await getProductsByCollection(cat.handle);
+              const img = products?.[0]?.node?.images?.edges?.[0]?.node?.url;
+              return img ? { handle: cat.handle, url: img } : null;
+            } catch { return null; }
+          })
+        );
+        const fallbackMap = {};
+        fallbacks.forEach((r) => { if (r) fallbackMap[r.handle] = r.url; });
+        setCollectionImages((prev) => ({ ...prev, ...fallbackMap }));
+      }
       setFeaturedError(null);
     } catch (e) {
       setFeaturedError('Unable to load products.');
@@ -133,7 +193,7 @@ export default function HomeScreen({ navigation }) {
 
         <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
           <View>
-            <Ionicons name="cart-outline" size={24} color="#7A5C2E" />
+            <Ionicons name="cart-outline" size={24} color="#16A34A" />
             {cartItems.length > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{cartItems.length}</Text>
@@ -152,8 +212,8 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={['#7A5C2E']}
-            tintColor="#7A5C2E"
+            colors={['#16A34A']}
+            tintColor="#16A34A"
           />
         }
       >
@@ -169,23 +229,32 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.sectionTitle}>Shop Categories</Text>
 
         <View style={styles.categoryGrid}>
-          {collections.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.categoryCard}
-              onPress={() =>
-                navigation.navigate('Collection', {
-                  handle: item.handle,
-                  title: item.title
-                })
-              }
-            >
-              <View style={[styles.categoryIcon, { backgroundColor: item.color + '20' }]}>
-                <Ionicons name={item.icon} size={24} color={item.color} />
-              </View>
-              <Text style={styles.categoryText}>{item.title}</Text>
-            </TouchableOpacity>
-          ))}
+          {collections.map((item, index) => {
+            const imageUrl = collectionImages[item.handle];
+            return (
+              <TouchableOpacity
+                key={index}
+                style={styles.categoryCard}
+                onPress={() =>
+                  navigation.navigate('Collection', {
+                    handle: item.handle,
+                    title: item.title
+                  })
+                }
+              >
+                <View style={[styles.categoryImageWrap, { backgroundColor: item.color + '15' }]}>
+                  {imageUrl ? (
+                    <Image source={{ uri: imageUrl }} style={styles.categoryImage} resizeMode="cover" />
+                  ) : (
+                    <View style={[styles.categoryIcon, { backgroundColor: item.color + '20' }]}>
+                      <Ionicons name={item.icon} size={24} color={item.color} />
+                    </View>
+                  )}
+                </View>
+                <Text style={styles.categoryText}>{item.title}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <TouchableOpacity 
@@ -193,7 +262,7 @@ export default function HomeScreen({ navigation }) {
           onPress={() => navigation.navigate('Categories')}
         >
           <Text style={styles.viewAllText}>View All Categories</Text>
-          <Ionicons name="arrow-forward" size={16} color="#7A5C2E" />
+          <Ionicons name="arrow-forward" size={16} color="#16A34A" />
         </TouchableOpacity>
 
         {/* FEATURED PRODUCTS - BEST SELLERS */}
@@ -201,7 +270,7 @@ export default function HomeScreen({ navigation }) {
 
         {loadingFeatured && (
           <View style={styles.loaderWrapper}>
-            <ActivityIndicator size="small" color="#7A5C2E" />
+            <ActivityIndicator size="small" color="#16A34A" />
             <Text style={styles.loaderText}>Loading products...</Text>
           </View>
         )}
@@ -387,7 +456,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 20,
     marginLeft: 15,
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
 
   centerTitle: {
@@ -395,13 +464,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 30,
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
 
   divider: {
     height: 2,
     width: 60,
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     alignSelf: 'center',
     marginVertical: 10
   },
@@ -427,13 +496,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4
   },
 
+  categoryImageWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 8,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%'
+  },
   categoryIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8
+    alignItems: 'center'
   },
 
   categoryText: { 
@@ -451,7 +532,7 @@ const styles = StyleSheet.create({
   },
 
   viewAllText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: '600',
     marginRight: 4
   },
@@ -475,11 +556,11 @@ const styles = StyleSheet.create({
     height: 36
   },
 
-  productPrice: { fontWeight: 'bold', marginTop: 4, color: '#7A5C2E', fontSize: 15 },
+  productPrice: { fontWeight: 'bold', marginTop: 4, color: '#16A34A', fontSize: 15 },
 
   addButton: {
     marginTop: 10,
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 8,
     borderRadius: 8,
     alignItems: 'center'
@@ -496,7 +577,7 @@ const styles = StyleSheet.create({
 
   loaderText: {
     marginLeft: 8,
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
 
   errorText: {
@@ -523,7 +604,7 @@ const styles = StyleSheet.create({
 
   promiseIcon: { fontSize: 24 },
 
-  promiseHeading: { fontWeight: 'bold', color: '#7A5C2E' },
+  promiseHeading: { fontWeight: 'bold', color: '#16A34A' },
 
   promiseSub: { fontSize: 13, fontWeight: '600', marginVertical: 4 },
 
@@ -543,7 +624,7 @@ const styles = StyleSheet.create({
   reviewAuthor: {
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
 
   pagination: {
@@ -561,7 +642,7 @@ const styles = StyleSheet.create({
   },
 
   activeDot: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     width: 16
   }
 

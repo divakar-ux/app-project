@@ -159,7 +159,7 @@ export default function SearchScreen({ navigation }) {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
           <Text style={{ marginTop: 10 }}>Searching...</Text>
         </View>
       ) : !searched && searchHistory.length > 0 ? (
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   searchBtn: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 8
@@ -296,12 +296,12 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#7A5C2E',
+    color: '#16A34A',
     marginBottom: 8
   },
   addBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 6,
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   clearText: {
     fontSize: 14,
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: '500'
   },
   historyItem: {

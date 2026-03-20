@@ -87,8 +87,15 @@ function TabNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#7A5C2E',
-        tabBarStyle: { height: 65, paddingBottom: 8 },
+        tabBarActiveTintColor: '#16A34A',
+        tabBarInactiveTintColor: '#6B7280',
+        tabBarStyle: {
+          height: 65,
+          paddingBottom: 8,
+          backgroundColor: '#fff',
+          borderTopColor: '#E5E7EB',
+          borderTopWidth: 1
+        },
         tabBarIcon: ({ color, size }) => {
           let iconName;
 

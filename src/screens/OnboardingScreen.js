@@ -43,7 +43,7 @@ const slides = [
     icon: '🚜',
     title: 'Farm to Your Table',
     description: 'From our 100-acre organic farm straight to your home. Quality you can taste and trust.',
-    color: '#7A5C2E'
+    color: '#16A34A'
   }
 ];
 
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 16,
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: '500'
   },
   slide: {
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   activeDot: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     width: 30
   },
   nextBtn: {

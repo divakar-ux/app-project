@@ -13,10 +13,21 @@ import ScreenHeader from '../components/ScreenHeader';
 
 export default function AboutScreen({ navigation }) {
   const socialLinks = [
-    { icon: 'logo-instagram', url: 'https://instagram.com/rengas', color: '#E4405F' },
-    { icon: 'logo-facebook', url: 'https://facebook.com/rengas', color: '#1877F2' },
-    { icon: 'logo-youtube', url: 'https://youtube.com/rengas', color: '#FF0000' },
-    { icon: 'logo-twitter', url: 'https://twitter.com/rengas', color: '#1DA1F2' }
+    {
+      icon: 'logo-youtube',
+      url: 'https://youtube.com/@dr_rengas_solardelights?si=OKm271Ygcx8V0bxL',
+      color: '#FF0000'
+    },
+    {
+      icon: 'logo-instagram',
+      url: 'https://www.instagram.com/rengas_dr?igsh=MXVhbXF1Y2s1NHd2aA==',
+      color: '#E4405F'
+    },
+    {
+      icon: 'logo-facebook',
+      url: 'https://www.facebook.com/share/1DgQtJVybs/',
+      color: '#1877F2'
+    }
   ];
 
   const values = [
@@ -72,7 +83,7 @@ export default function AboutScreen({ navigation }) {
           <View style={styles.missionSection}>
             <Text style={styles.sectionTitle}>Our Mission</Text>
             <View style={styles.missionCard}>
-              <Ionicons name="leaf" size={40} color="#7A5C2E" />
+              <Ionicons name="leaf" size={40} color="#16A34A" />
               <Text style={styles.missionText}>
                 To revolutionize the way India eats by providing wholesome, organic, 
                 and sustainably produced food that nourishes both body and soul.
@@ -175,7 +186,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 16,
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontStyle: 'italic',
     marginTop: 8
   },
@@ -252,7 +263,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12

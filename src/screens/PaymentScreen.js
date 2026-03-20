@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -21,10 +21,20 @@ export default function PaymentScreen({ route, navigation }) {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSlowHint, setShowSlowHint] = useState(false);
+
+  useEffect(() => {
+    if (!checkoutUrl || hasError) return;
+    const slowHintTimer = setTimeout(() => setShowSlowHint(true), 10000);
+    const maxLoadingTimer = setTimeout(() => setLoading(false), 20000);
+    return () => {
+      clearTimeout(slowHintTimer);
+      clearTimeout(maxLoadingTimer);
+    };
+  }, [checkoutUrl, hasError]);
 
   const handleNavigationChange = (navState) => {
     const url = navState.url;
-
     if (url.includes('/thank_you') || url.includes('thank-you') || url.includes('/orders/')) {
       clearCart();
       Alert.alert(
@@ -34,11 +44,8 @@ export default function PaymentScreen({ route, navigation }) {
           {
             text: 'Continue Shopping',
             onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'CartMain' }],
-              });
-              navigation.navigate('Home');
+              navigation.reset({ index: 0, routes: [{ name: 'CartMain' }] });
+              navigation.getParent()?.getParent()?.navigate('Home');
             }
           }
         ]
@@ -48,10 +55,8 @@ export default function PaymentScreen({ route, navigation }) {
 
   const handleError = (syntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
-    console.warn('WebView error:', nativeEvent);
     setHasError(true);
     setLoading(false);
-    
     if (nativeEvent.description?.includes('TIMED_OUT')) {
       setErrorMessage('Connection timed out. Please check your internet connection.');
     } else if (nativeEvent.description?.includes('NO_CONNECTION') || nativeEvent.description?.includes('INTERNET_DISCONNECTED')) {
@@ -63,19 +68,18 @@ export default function PaymentScreen({ route, navigation }) {
 
   const handleRetry = () => {
     setHasError(false);
+    setShowSlowHint(false);
     setLoading(true);
     setErrorMessage('');
     webViewRef.current?.reload();
   };
 
   const handleOpenInBrowser = async () => {
+    if (!checkoutUrl) return;
     try {
       const canOpen = await Linking.canOpenURL(checkoutUrl);
-      if (canOpen) {
-        await Linking.openURL(checkoutUrl);
-      } else {
-        Alert.alert('Error', 'Cannot open browser');
-      }
+      if (canOpen) await Linking.openURL(checkoutUrl);
+      else Alert.alert('Error', 'Cannot open browser');
     } catch (error) {
       Alert.alert('Error', 'Failed to open browser');
     }
@@ -87,11 +91,7 @@ export default function PaymentScreen({ route, navigation }) {
       'Are you sure you want to cancel the payment?',
       [
         { text: 'No', style: 'cancel' },
-        {
-          text: 'Yes',
-          style: 'destructive',
-          onPress: () => navigation.goBack()
-        }
+        { text: 'Yes', style: 'destructive', onPress: () => navigation.goBack() }
       ]
     );
   };
@@ -99,13 +99,10 @@ export default function PaymentScreen({ route, navigation }) {
   if (!checkoutUrl) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.errorContainer}>
+        <View style={styles.content}>
           <Ionicons name="alert-circle-outline" size={60} color="#d9534f" />
           <Text style={styles.errorText}>Invalid checkout URL</Text>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Text style={styles.backButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -121,33 +118,36 @@ export default function PaymentScreen({ route, navigation }) {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Secure Payment</Text>
         <TouchableOpacity onPress={handleOpenInBrowser} style={styles.browserBtn}>
-          <Ionicons name="open-outline" size={20} color="#7A5C2E" />
+          <Ionicons name="open-outline" size={20} color="#16A34A" />
         </TouchableOpacity>
       </View>
 
       {loading && !hasError && (
         <View style={styles.loaderOverlay}>
-          <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
           <Text style={styles.loaderText}>Loading secure checkout...</Text>
+          {showSlowHint && (
+            <TouchableOpacity style={styles.slowHint} onPress={handleOpenInBrowser}>
+              <Text style={styles.slowHintText}>Taking too long? Open in browser</Text>
+              <Ionicons name="open-outline" size={16} color="#16A34A" style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
       {hasError ? (
-        <View style={styles.errorContainer}>
+        <View style={styles.content}>
           <Ionicons name="cloud-offline-outline" size={70} color="#999" />
           <Text style={styles.errorTitle}>Connection Error</Text>
           <Text style={styles.errorMessage}>{errorMessage}</Text>
-          
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
             <Ionicons name="refresh" size={20} color="#fff" />
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={styles.browserButton} onPress={handleOpenInBrowser}>
-            <Ionicons name="open-outline" size={20} color="#7A5C2E" />
+            <Ionicons name="open-outline" size={20} color="#16A34A" />
             <Text style={styles.browserButtonText}>Open in Browser</Text>
           </TouchableOpacity>
-          
           <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
@@ -161,10 +161,6 @@ export default function PaymentScreen({ route, navigation }) {
           onLoadEnd={() => setLoading(false)}
           onNavigationStateChange={handleNavigationChange}
           onError={handleError}
-          onHttpError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            console.warn('HTTP error:', nativeEvent.statusCode);
-          }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           startInLoadingState={true}
@@ -172,7 +168,6 @@ export default function PaymentScreen({ route, navigation }) {
           sharedCookiesEnabled={true}
           thirdPartyCookiesEnabled={true}
           cacheEnabled={true}
-          incognito={false}
         />
       )}
     </SafeAreaView>
@@ -224,11 +219,26 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14
   },
-  errorContainer: {
+  slowHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#16A34A',
+    borderRadius: 8
+  },
+  slowHintText: {
+    color: '#16A34A',
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 30
+    padding: 24
   },
   errorTitle: {
     fontSize: 20,
@@ -244,21 +254,16 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     lineHeight: 20
   },
-  errorText: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 12,
-    marginBottom: 20
-  },
   retryButton: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 12,
     width: '100%',
+    maxWidth: 280,
     justifyContent: 'center'
   },
   retryButtonText: {
@@ -275,27 +280,33 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#7A5C2E',
+    borderColor: '#16A34A',
     marginBottom: 12,
     width: '100%',
+    maxWidth: 280,
     justifyContent: 'center'
   },
   browserButtonText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: 'bold',
     fontSize: 16,
     marginLeft: 8
   },
   cancelButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 30
+    paddingVertical: 14
   },
   cancelButtonText: {
     color: '#999',
     fontSize: 16
   },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 12,
+    marginBottom: 20
+  },
   backButton: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8

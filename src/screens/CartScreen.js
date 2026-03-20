@@ -24,7 +24,7 @@ export default function CartScreen({ navigation }) {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
       </View>
     );
   }
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   shopBtn: {
     marginTop: 20,
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   price: {
     marginTop: 4,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
   qtyRow: {
     flexDirection: 'row',
@@ -241,11 +241,11 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
   checkoutBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',

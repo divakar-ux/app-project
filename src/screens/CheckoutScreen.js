@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontWeight: 'bold',
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 14
   },
   footer: {
@@ -265,11 +265,11 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#7A5C2E'
+    color: '#16A34A'
   },
   placeOrderBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

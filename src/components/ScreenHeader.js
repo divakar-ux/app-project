@@ -10,7 +10,7 @@ export default function ScreenHeader({ title, navigation, showBack = true }) {
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Ionicons name="arrow-back" size={24} color="#16A34A" />
         </TouchableOpacity>
       ) : (
         <View style={styles.backBtn} />
@@ -47,6 +47,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#333'
+    color: '#111827'
   }
 });

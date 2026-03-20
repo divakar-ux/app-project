@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Image } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import AppNavigator from './AppNavigator';
 import OnboardingScreen, { checkOnboardingStatus } from '../screens/OnboardingScreen';
@@ -20,7 +20,12 @@ export default function RootNavigator() {
   if (isLoading || showOnboarding === null) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        <ActivityIndicator size="large" color="#7A5C2E" />
+        <Image
+          source={require('../assets/logo.png')}
+          style={{ width: 120, height: 120, marginBottom: 24 }}
+          resizeMode="contain"
+        />
+        <ActivityIndicator size="large" color="#16A34A" />
       </View>
     );
   }

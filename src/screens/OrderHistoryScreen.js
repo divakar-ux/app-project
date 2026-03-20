@@ -147,7 +147,7 @@ export default function OrderHistoryScreen({ navigation }) {
       <View style={styles.wrapper}>
         <ScreenHeader title="My Orders" navigation={navigation} />
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
           <Text style={{ marginTop: 10 }}>Loading orders...</Text>
         </View>
       </View>
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   orderTotal: {
     fontWeight: 'bold',
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 16,
     marginBottom: 4
   },
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontWeight: '600',
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 14
   },
   errorText: {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   retryBtn: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   shopBtn: {
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8

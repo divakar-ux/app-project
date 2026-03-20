@@ -131,15 +131,15 @@ export default function CollectionScreen({ route, navigation }) {
           style={styles.sortBtn}
           onPress={() => setShowSortModal(true)}
         >
-          <Ionicons name="funnel-outline" size={16} color="#7A5C2E" />
+          <Ionicons name="funnel-outline" size={16} color="#16A34A" />
           <Text style={styles.sortBtnText}>{currentSortLabel}</Text>
-          <Ionicons name="chevron-down" size={14} color="#7A5C2E" />
+          <Ionicons name="chevron-down" size={14} color="#16A34A" />
         </TouchableOpacity>
       </View>
 
       {loading ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#7A5C2E" />
+          <ActivityIndicator size="large" color="#16A34A" />
         </View>
       ) : (
         <FlatList
@@ -153,8 +153,8 @@ export default function CollectionScreen({ route, navigation }) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              colors={['#7A5C2E']}
-              tintColor="#7A5C2E"
+            colors={['#16A34A']}
+            tintColor="#16A34A"
             />
           }
           ListEmptyComponent={
@@ -199,7 +199,7 @@ export default function CollectionScreen({ route, navigation }) {
                 <Ionicons 
                   name={option.icon} 
                   size={20} 
-                  color={sortBy === option.id ? '#7A5C2E' : '#666'} 
+                  color={sortBy === option.id ? '#16A34A' : '#666'} 
                 />
                 <Text style={[
                   styles.sortOptionText,
@@ -208,7 +208,7 @@ export default function CollectionScreen({ route, navigation }) {
                   {option.label}
                 </Text>
                 {sortBy === option.id && (
-                  <Ionicons name="checkmark" size={20} color="#7A5C2E" />
+                  <Ionicons name="checkmark" size={20} color="#16A34A" />
                 )}
               </TouchableOpacity>
             ))}
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   sortBtnText: {
     fontSize: 13,
-    color: '#7A5C2E',
+    color: '#16A34A',
     marginHorizontal: 6
   },
   loader: {
@@ -286,12 +286,12 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#7A5C2E',
+    color: '#16A34A',
     marginBottom: 8
   },
   addBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     marginLeft: 12
   },
   sortOptionTextActive: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontWeight: '600'
   }
 });

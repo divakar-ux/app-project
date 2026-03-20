@@ -24,6 +24,20 @@ export default function EditProfileScreen({ navigation }) {
   const [phone, setPhone] = useState(customer?.phone || '');
   const [loading, setLoading] = useState(false);
 
+  const formatPhoneForShopify = (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    // Shopify expects E.164 format (e.g. +919876543210)
+    const digits = trimmed.replace(/\D/g, '');
+    if (digits.length === 10 && (digits.startsWith('6') || digits.startsWith('7') || digits.startsWith('8') || digits.startsWith('9'))) {
+      return `+91${digits}`;
+    }
+    if (digits.length === 12 && digits.startsWith('91')) {
+      return `+${digits}`;
+    }
+    return trimmed.startsWith('+') ? trimmed : `+${trimmed}`;
+  };
+
   const handleSave = async () => {
     if (!firstName.trim()) {
       Alert.alert('Error', 'First name is required');
@@ -33,10 +47,11 @@ export default function EditProfileScreen({ navigation }) {
     setLoading(true);
 
     try {
+      const phoneValue = phone.trim() ? formatPhoneForShopify(phone) : null;
       const result = await updateCustomer(userToken, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phone: phone.trim() || null
+        phone: phoneValue
       });
 
       if (result.customerUserErrors?.length > 0) {
@@ -51,7 +66,7 @@ export default function EditProfileScreen({ navigation }) {
         ]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
+      Alert.alert('Error', error.message || 'Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -68,7 +83,7 @@ export default function EditProfileScreen({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.avatarSection}>
             <View style={styles.avatar}>
-              <Ionicons name="person" size={50} color="#7A5C2E" />
+              <Ionicons name="person" size={50} color="#16A34A" />
             </View>
             <Text style={styles.email}>{customer?.email}</Text>
           </View>
@@ -201,7 +216,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 16,
     borderRadius: 10,
     alignItems: 'center',

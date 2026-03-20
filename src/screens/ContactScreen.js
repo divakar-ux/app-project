@@ -7,8 +7,7 @@ import {
   TextInput,
   ScrollView,
   Linking,
-  Alert,
-  ActivityIndicator
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenHeader from '../components/ScreenHeader';
@@ -17,36 +16,35 @@ export default function ContactScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
 
   const contactMethods = [
     {
       icon: 'call-outline',
       title: 'Phone',
-      value: '+91 98765 43210',
+      value: '+91 63833 01737',
       color: '#4CAF50',
-      onPress: () => Linking.openURL('tel:+919876543210')
+      onPress: () => Linking.openURL('tel:+916383301737')
     },
     {
       icon: 'mail-outline',
       title: 'Email',
-      value: 'support@rengas.com',
+      value: 'ecomsolardelights@gmail.com',
       color: '#2196F3',
-      onPress: () => Linking.openURL('mailto:support@rengas.com')
+      onPress: () => Linking.openURL('mailto:ecomsolardelights@gmail.com')
     },
     {
       icon: 'logo-whatsapp',
       title: 'WhatsApp',
-      value: '+91 98765 43210',
+      value: '+91 63833 01737',
       color: '#25D366',
-      onPress: () => Linking.openURL('https://wa.me/919876543210')
+      onPress: () => Linking.openURL('https://wa.me/916383301737')
     },
     {
       icon: 'location-outline',
       title: 'Address',
-      value: 'Chennai, Tamil Nadu, India',
+      value: 'SF No. 392/3B, Pennagaram Main Road, Near Kirpananda Variyar High School, Sogattur, Dharmapuri - 636809',
       color: '#FF5722',
-      onPress: () => {}
+      onPress: () => Linking.openURL('https://maps.google.com/?q=SF+No.+392/3B+Pennagaram+Main+Road+Sogattur+Dharmapuri+636809')
     }
   ];
 
@@ -82,20 +80,25 @@ export default function ContactScreen({ navigation }) {
       return;
     }
 
-    setSending(true);
+    const subject = encodeURIComponent(`Contact from ${name.trim()}`);
+    const body = encodeURIComponent(
+      `${message.trim()}\n\n---\nFrom: ${name.trim()}\nEmail: ${email.trim()}`
+    );
+    const mailtoUrl = `mailto:ecomsolardelights@gmail.com?subject=${subject}&body=${body}`;
 
-    setTimeout(() => {
-      setSending(false);
-      Alert.alert(
-        'Message Sent!',
-        'Thank you for contacting us. We will get back to you within 24 hours.',
-        [{ text: 'OK', onPress: () => {
-          setName('');
-          setEmail('');
-          setMessage('');
-        }}]
-      );
-    }, 1500);
+    try {
+      const canOpen = await Linking.canOpenURL(mailtoUrl);
+      if (canOpen) {
+        await Linking.openURL(mailtoUrl);
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        Alert.alert('Error', 'Unable to open email app');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Could not open email. Please email us at ecomsolardelights@gmail.com');
+    }
   };
 
   return (
@@ -134,7 +137,7 @@ export default function ContactScreen({ navigation }) {
                   <Ionicons
                     name={expandedFaq === index ? 'chevron-up' : 'chevron-down'}
                     size={20}
-                    color="#7A5C2E"
+                    color="#16A34A"
                   />
                 </View>
                 {expandedFaq === index && (
@@ -172,19 +175,9 @@ export default function ContactScreen({ navigation }) {
               textAlignVertical="top"
               placeholderTextColor="#999"
             />
-            <TouchableOpacity
-              style={[styles.submitBtn, sending && styles.submitBtnDisabled]}
-              onPress={handleSubmit}
-              disabled={sending}
-            >
-              {sending ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <Ionicons name="send" size={18} color="#fff" />
-                  <Text style={styles.submitBtnText}>Send Message</Text>
-                </>
-              )}
+            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+              <Ionicons name="send" size={18} color="#fff" />
+              <Text style={styles.submitBtnText}>Send Message</Text>
             </TouchableOpacity>
           </View>
 
@@ -296,15 +289,12 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 4
-  },
-  submitBtnDisabled: {
-    opacity: 0.7
   },
   submitBtnText: {
     color: '#fff',

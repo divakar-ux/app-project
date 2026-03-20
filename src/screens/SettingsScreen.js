@@ -79,7 +79,7 @@ export default function SettingsScreen({ navigation }) {
           <View style={styles.section}>
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="notifications-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="notifications-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>Push Notifications</Text>
                   <Text style={styles.settingDesc}>Enable all notifications</Text>
@@ -89,7 +89,7 @@ export default function SettingsScreen({ navigation }) {
                 value={notifications}
                 onValueChange={setNotifications}
                 trackColor={{ false: '#ddd', true: '#c9b896' }}
-                thumbColor={notifications ? '#7A5C2E' : '#f4f3f4'}
+                thumbColor={notifications ? '#16A34A' : '#f4f3f4'}
               />
             </View>
 
@@ -97,7 +97,7 @@ export default function SettingsScreen({ navigation }) {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="cube-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="cube-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>Order Updates</Text>
                   <Text style={styles.settingDesc}>Get notified about order status</Text>
@@ -107,7 +107,7 @@ export default function SettingsScreen({ navigation }) {
                 value={orderUpdates}
                 onValueChange={setOrderUpdates}
                 trackColor={{ false: '#ddd', true: '#c9b896' }}
-                thumbColor={orderUpdates ? '#7A5C2E' : '#f4f3f4'}
+                thumbColor={orderUpdates ? '#16A34A' : '#f4f3f4'}
               />
             </View>
 
@@ -115,7 +115,7 @@ export default function SettingsScreen({ navigation }) {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="pricetag-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="pricetag-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>Promotions</Text>
                   <Text style={styles.settingDesc}>Receive offers and deals</Text>
@@ -125,7 +125,7 @@ export default function SettingsScreen({ navigation }) {
                 value={promotions}
                 onValueChange={setPromos}
                 trackColor={{ false: '#ddd', true: '#c9b896' }}
-                thumbColor={promotions ? '#7A5C2E' : '#f4f3f4'}
+                thumbColor={promotions ? '#16A34A' : '#f4f3f4'}
               />
             </View>
           </View>
@@ -134,7 +134,7 @@ export default function SettingsScreen({ navigation }) {
           <View style={styles.section}>
             <TouchableOpacity style={styles.actionRow} onPress={clearSearchHistory}>
               <View style={styles.settingInfo}>
-                <Ionicons name="search-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="search-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>Clear Search History</Text>
                   <Text style={styles.settingDesc}>Remove search records</Text>
@@ -166,7 +166,7 @@ export default function SettingsScreen({ navigation }) {
               onPress={() => navigation.navigate('About')}
             >
               <View style={styles.settingInfo}>
-                <Ionicons name="information-circle-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="information-circle-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>About Dr. Renga's</Text>
                   <Text style={styles.settingDesc}>Learn about our story</Text>
@@ -179,7 +179,7 @@ export default function SettingsScreen({ navigation }) {
 
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
-                <Ionicons name="document-text-outline" size={22} color="#7A5C2E" />
+                <Ionicons name="document-text-outline" size={22} color="#16A34A" />
                 <View style={styles.settingText}>
                   <Text style={styles.settingTitle}>App Version</Text>
                   <Text style={styles.settingDesc}>1.0.0</Text>

@@ -45,7 +45,7 @@ export default function ProfileScreen({ navigation }) {
             style={styles.menuItem}
             onPress={() => navigation.navigate('Contact')}
           >
-            <Ionicons name="help-circle-outline" size={22} color="#7A5C2E" />
+            <Ionicons name="help-circle-outline" size={22} color="#16A34A" />
             <Text style={styles.menuText}>Help & Support</Text>
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
@@ -56,7 +56,7 @@ export default function ProfileScreen({ navigation }) {
             style={styles.menuItem}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Ionicons name="settings-outline" size={22} color="#7A5C2E" />
+            <Ionicons name="settings-outline" size={22} color="#16A34A" />
             <Text style={styles.menuText}>Settings</Text>
             <Ionicons name="chevron-forward" size={20} color="#999" />
           </TouchableOpacity>
@@ -69,7 +69,7 @@ export default function ProfileScreen({ navigation }) {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={40} color="#7A5C2E" />
+          <Ionicons name="person" size={40} color="#16A34A" />
         </View>
         <Text style={styles.title}>{displayName}</Text>
         {customer?.email && (
@@ -82,7 +82,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('EditProfile')}
         >
-          <Ionicons name="create-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="create-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>Edit Profile</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -93,7 +93,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('OrderHistory')}
         >
-          <Ionicons name="receipt-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="receipt-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>My Orders</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -104,7 +104,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Wishlist')}
         >
-          <Ionicons name="heart-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="heart-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>My Wishlist</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -115,7 +115,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Addresses')}
         >
-          <Ionicons name="location-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="location-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>My Addresses</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -126,7 +126,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Contact')}
         >
-          <Ionicons name="help-circle-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="help-circle-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>Help & Support</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -137,7 +137,7 @@ export default function ProfileScreen({ navigation }) {
           style={styles.menuItem}
           onPress={() => navigation.navigate('Settings')}
         >
-          <Ionicons name="settings-outline" size={22} color="#7A5C2E" />
+          <Ionicons name="settings-outline" size={22} color="#16A34A" />
           <Text style={styles.menuText}>Settings</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     flexDirection: 'row',
-    backgroundColor: '#7A5C2E',
+    backgroundColor: '#16A34A',
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 10,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30
   },
   registerBtnText: {
-    color: '#7A5C2E',
+    color: '#16A34A',
     fontSize: 16,
     fontWeight: '600'
   },
