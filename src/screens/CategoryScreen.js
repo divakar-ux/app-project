@@ -4,11 +4,9 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 export default function CategoryScreen({ navigation }) {
 
   const categories = [
-    { title: "Dehydrated Vegetables", handle: "dehydrated-vegetables" },
+    { title: "Dried Vegetables", handle: "dried-vegetables" },
     { title: "Dried Leaves & Herbs", handle: "dried-leaves-herbs" },
-    { title: "Peanut Butter & Instant Mixes", handle: "peanut-butter-healthy-instant-mixes" },
-    { title: "Healthy Combo Packs", handle: "healthy-vegetable-herbal-combo-packs" },
-    { title: "Jaggery Granules", handle: "jaggery-granules" }
+    { title: "Peanut Butter & Instant Mixes", handle: "milk-mix-powder-rose-milk-badam-milk-peanut-butter" },
   ];
 
   return (

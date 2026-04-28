@@ -24,10 +24,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { getProductsByCollection, getAllCollections } from '../api/shopify';
 
 const HOME_COLLECTIONS = [
-  { title: "Dried Vegetables", handle: "dehydrated-vegetables", icon: "leaf-outline", color: "#4CAF50" },
-  { title: "Dried Fruits", handle: "dried-fruits-no-sugar", icon: "rose-outline", color: "#9C27B0" },
-  { title: "Sweets", handle: "sweets", icon: "ice-cream-outline", color: "#FF5722" },
-  { title: "Combo Packs", handle: "healthy-vegetable-herbal-combo-packs", icon: "gift-outline", color: "#E91E63" },
+  { title: "Dried Vegetables", handle: "dried-vegetables", icon: "leaf-outline", color: "#4CAF50" },
+  { title: "Dried Fruits", handle: "dried-fruits", icon: "rose-outline", color: "#9C27B0" },
+  {
+    title: "Peanut Butter & Mixes",
+    handle: "milk-mix-powder-rose-milk-badam-milk-peanut-butter",
+    icon: "nutrition-outline",
+    color: "#FF9800"
+  },
+  {
+    title: "Bulk Fruits",
+    handle: "bulk-dried-fruits",
+    icon: "basket-outline",
+    color: "#FF6B6B"
+  },
 ];
 import { CartContext } from '../context/CartContext';
 
@@ -218,12 +228,22 @@ export default function HomeScreen({ navigation }) {
         }
       >
 
-        {/* BANNER */}
-        <Image
-          source={require('../assets/banner1.jpg')}
-          style={styles.banner}
-          resizeMode="cover"
-        />
+        {/* BANNER — tap opens Dried Vegetables collection */}
+        <TouchableOpacity
+          activeOpacity={0.92}
+          onPress={() =>
+            navigation.navigate('Collection', {
+              handle: 'dried-vegetables',
+              title: 'Dried Vegetables'
+            })
+          }
+        >
+          <Image
+            source={require('../assets/banner1.jpg')}
+            style={styles.banner}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
 
         {/* SHOP CATEGORIES */}
         <Text style={styles.sectionTitle}>Shop Categories</Text>

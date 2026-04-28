@@ -18,14 +18,14 @@ const categories = [
     color: "#FFD700"
   },
   {
-    title: "Dehydrated Vegetables",
-    handle: "dehydrated-vegetables",
+    title: "Dried Vegetables",
+    handle: "dried-vegetables",
     icon: "leaf-outline",
     color: "#4CAF50"
   },
   {
     title: "Dried Fruits",
-    handle: "dried-fruits-no-sugar",
+    handle: "dried-fruits",
     icon: "rose-outline",
     color: "#9C27B0"
   },
@@ -36,38 +36,20 @@ const categories = [
     color: "#8BC34A"
   },
   {
-    title: "Sweets",
-    handle: "sweets",
-    icon: "ice-cream-outline",
-    color: "#FF5722"
-  },
-  {
-    title: "Jaggery Granules",
-    handle: "jaggery-granules",
-    icon: "cube-outline",
-    color: "#795548"
-  },
-  {
     title: "Peanut Butter & Mixes",
-    handle: "peanut-butter-healthy-instant-mixes",
+    handle: "milk-mix-powder-rose-milk-badam-milk-peanut-butter",
     icon: "nutrition-outline",
     color: "#FF9800"
   },
   {
-    title: "Combo Packs",
-    handle: "healthy-vegetable-herbal-combo-packs",
-    icon: "gift-outline",
-    color: "#E91E63"
-  },
-  {
     title: "Bulk Fruits",
-    handle: "bulk-fruits",
+    handle: "bulk-dried-fruits",
     icon: "basket-outline",
     color: "#FF6B6B"
   },
   {
     title: "Bulk Vegetables",
-    handle: "bulk-vegetables",
+    handle: "bulk-dried-vegetables",
     icon: "cart-outline",
     color: "#2ECC71"
   }

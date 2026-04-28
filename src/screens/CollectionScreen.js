@@ -27,7 +27,7 @@ export default function CollectionScreen({ route, navigation }) {
   const { addToCart } = useContext(CartContext);
 
   const {
-    handle = 'dehydrated-vegetables',
+    handle = 'dried-vegetables',
     title = 'Dehydrated Vegetables'
   } = route.params || {};
 
@@ -90,17 +90,24 @@ export default function CollectionScreen({ route, navigation }) {
     if (!item || !item.node) return null;
 
     const product = item.node;
-    const image = product.images?.edges?.[0]?.node?.url;
+    const image =
+      product.images?.edges?.[0]?.node?.url ||
+      product.featuredImage?.url ||
+      null;
     const price = product.variants?.edges?.[0]?.node?.price?.amount;
-
-    if (!image) return null;
 
     return (
       <View style={styles.card}>
         <TouchableOpacity
           onPress={() => navigation.navigate('ProductDetails', { product: item })}
         >
-          <Image source={{ uri: image }} style={styles.image} />
+          {image ? (
+            <Image source={{ uri: image }} style={styles.image} />
+          ) : (
+            <View style={[styles.image, styles.imagePlaceholder]}>
+              <Ionicons name="image-outline" size={40} color="#ccc" />
+            </View>
+          )}
         </TouchableOpacity>
         <View style={styles.cardContent}>
           <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
@@ -273,6 +280,11 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 140
+  },
+  imagePlaceholder: {
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   cardContent: {
     padding: 10

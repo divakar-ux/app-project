@@ -1,5 +1,5 @@
-const SHOPIFY_DOMAIN = "";
-const STOREFRONT_TOKEN = "";
+const SHOPIFY_DOMAIN = "4auutp-cr.myshopify.com";
+const STOREFRONT_TOKEN = "629c3006f846b5bae85befe812aa3dca";
 
 const endpoint = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
 
@@ -68,6 +68,9 @@ export const getProductsByCollection = async (handle) => {
             id
             title
             description
+            featuredImage {
+              url
+            }
             images(first:1) {
               edges {
                 node {
